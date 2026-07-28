@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>動画素材作成GPTsの使い方</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
+    background: #faf5ee;
+    color: #2a1a10;
+    font-size: 18px;
+    line-height: 1.9;
+    padding-bottom: 70px;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+}
+
+.container { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+
+/* ── Hero ── */
+header {
+    background: linear-gradient(135deg, #8b4022 0%, #c4714a 100%);
+    padding: 40px 20px 36px;
+    text-align: center;
+    color: #ffffff;
+}
+header .emoji { font-size: 52px; margin-bottom: 12px; }
+header h1 { font-size: 25px; font-weight: 800; line-height:1.5; }
+header p { font-size: 17px; color: #ffe6d4; margin-top: 14px; max-width: 540px; margin-left:auto; margin-right:auto; }
+
+/* ── Section ── */
+.section { margin-top: 48px; }
+.section-head { margin-bottom: 22px; }
+.section-head h2 {
+    font-size: 22px; font-weight:800; color:#3a2210;
+    border-bottom: 4px solid #e0b088; padding-bottom: 10px;
+}
+.section-head p { font-size:16px; color:#6a4a30; margin-top:10px; }
+p.desc { font-size:16px; color:#4a3220; }
+
+/* ── 入口→出口マップ ── */
+.svc-map { display:flex; flex-direction:column; gap:0; margin-top:4px; }
+.svc-box { border-radius:16px; padding:20px; border:2px solid; }
+.svc-box.a { background:#fdf1e8; border-color:#e8c8a8; }
+.svc-box.b { background:#fffdf9; border-color:#e8dccb; }
+.svc-box.c { background:#fdf1e8; border-color:#e8c8a8; }
+.svc-box .svc-icon { font-size:30px; margin-bottom:8px; }
+.svc-box h4 { font-size:18px; font-weight:800; margin-bottom:6px; }
+.svc-box p { font-size:16px; color:#6a4a30; }
+.svc-mid-arrow { text-align:center; font-size:24px; color:#d4a878; padding:6px 0; }
+
+/* ── Feature cards ── */
+.feature-grid { display:flex; flex-direction:column; gap:12px; }
+.feature-card {
+    background:#fff; border:2px solid #e8dccb; border-radius:14px;
+    padding:16px 18px; display:flex; gap:14px; align-items:flex-start;
+    box-shadow:0 2px 8px rgba(120,70,30,0.06);
+}
+.feature-card .fi { font-size:28px; flex-shrink:0; }
+.feature-card h3 { font-size:17px; font-weight:700; margin-bottom:4px; }
+.feature-card p { font-size:15.5px; color:#6a4a30; }
+
+/* ── Flow step cards ── */
+.flow-step {
+    background:#fffdf9; border:2px solid #e8ccae; border-radius:18px;
+    padding: 22px 20px; margin-bottom: 18px;
+    box-shadow: 0 3px 10px rgba(90,50,20,0.07);
+}
+.flow-step-head { display:flex; align-items:center; gap:14px; margin-bottom: 12px; }
+.flow-num {
+    flex-shrink:0; width:44px; height:44px; border-radius:50%;
+    background: linear-gradient(135deg, #c4714a, #e0a06a); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:19px; box-shadow:0 3px 8px rgba(196,113,74,0.3);
+}
+.flow-step-head h3 { font-size:18.5px; font-weight:800; color:#2a1a10; min-width:0; }
+.flow-step p.desc { margin-bottom:4px; }
+.flow-arrow-down { text-align:center; font-size:24px; color:#d4a878; margin: -6px 0 10px; }
+
+/* ── Buttons ── */
+.btn-chip {
+    display:flex; align-items:center; justify-content:center; gap:8px; padding:14px 20px;
+    border-radius:12px; font-size:16.5px; font-weight:800; color:#fff;
+    box-shadow:0 3px 8px rgba(0,0,0,0.18); text-decoration:none;
+    margin-top: 10px; border:none; cursor:pointer; font-family:inherit;
+    width:100%; box-sizing:border-box;
+}
+.btn-chip.primary { background: linear-gradient(135deg, #c4714a 0%, #e0a06a 100%); }
+.btn-chip.dark    { background: linear-gradient(135deg, #4a3220, #6a4a30); }
+.btn-chip.small   { font-size:14px; padding:9px 14px; margin-top:0; width:auto; flex-shrink:0; }
+
+/* ── モックアップ（イメージ図） ── */
+.browser-mock {
+    border:2px solid #ddc9ae; border-radius:14px; overflow:hidden;
+    margin: 12px 0 4px; box-shadow: 0 3px 10px rgba(90,50,20,0.08); background:#fff;
+}
+.bm-bar {
+    background:#efe4d4; padding:10px 12px; display:flex; align-items:center; gap:10px;
+    border-bottom:1px solid #ddc9ae;
+}
+.bm-dots { display:flex; gap:6px; flex-shrink:0; }
+.bm-dot { width:10px; height:10px; border-radius:50%; }
+.bm-dot.r { background:#ff5f57; } .bm-dot.y { background:#febc2e; } .bm-dot.g { background:#28c840; }
+.bm-url {
+    flex:1; min-width:0; background:#fff; border:1px solid #ddc9ae; border-radius:7px;
+    padding:6px 10px; font-size:13px; color:#555; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.bm-content { padding:18px; }
+.mock-label {
+    font-size:13px; color:#b8895a; margin-bottom: 10px; font-weight:700;
+    background:#fdf1e2; display:inline-block; padding:3px 10px; border-radius:20px;
+}
+
+/* チャット風モック */
+.chat-row { display:flex; margin-bottom:10px; }
+.chat-row.me { justify-content:flex-end; }
+.bubble {
+    max-width:82%; padding:11px 14px; border-radius:14px; font-size:14.5px; line-height:1.75;
+}
+.bubble.ai { background:#f4efe7; color:#2a1a10; border:1px solid #e3d6c4; border-top-left-radius:4px; }
+.bubble.me { background:#c4714a; color:#fff; border-top-right-radius:4px; }
+.bubble ol { margin:6px 0 0 18px; padding:0; }
+.bubble li { font-size:14px; }
+.chat-input {
+    margin-top:12px; border:1.5px solid #ddd; border-radius:24px; padding:10px 16px;
+    font-size:14px; color:#aaa; background:#fafafa;
+}
+
+/* 出力プレビュー風モック */
+.doc-mock { border:1.5px solid #e3d6c4; border-radius:10px; background:#fff; padding:14px 16px; }
+.doc-mock .doc-h { font-size:14.5px; font-weight:800; color:#8b4022; margin-bottom:6px; }
+.doc-mock .doc-line { height:8px; background:#efe6da; border-radius:4px; margin-bottom:7px; }
+.doc-mock .doc-line.s { width:55%; }
+.doc-mock .doc-line.m { width:80%; }
+.doc-mock .doc-code {
+    background:#2e2419; color:#f0e2cf; border-radius:8px; padding:10px 12px; margin-top:10px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12.5px; line-height:1.7;
+    white-space:pre-wrap; word-break:break-word;
+}
+
+/* ── 番号付き出力リスト ── */
+.out-list { display:flex; flex-direction:column; gap:8px; }
+.out-item {
+    display:flex; gap:12px; align-items:flex-start;
+    background:#fff; border:1.5px solid #e8dccb; border-radius:12px; padding:12px 14px;
+}
+.out-item .n {
+    flex-shrink:0; width:28px; height:28px; border-radius:8px; background:#fdf1e2;
+    border:1.5px solid #e0b088; color:#8b4022; font-weight:800; font-size:14px;
+    display:flex; align-items:center; justify-content:center;
+}
+.out-item .t { font-size:15.5px; font-weight:700; color:#2a1a10; min-width:0; }
+.out-item .t span { display:block; font-size:14px; font-weight:400; color:#7a5a40; margin-top:2px; }
+
+/* ── ヒアリングカード ── */
+.setting-card {
+    background:#fffdf9; border:2px solid #e8ccae; border-radius:16px;
+    padding:18px; margin-bottom:14px; box-shadow: 0 3px 10px rgba(90,50,20,0.06);
+}
+.setting-card-head { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+.setting-card .si { font-size:26px; flex-shrink:0; }
+.setting-card h3 { font-size:17.5px; font-weight:800; color:#2a1a10; min-width:0; }
+.setting-card p { font-size:15.5px; color:#4a3220; }
+.setting-card .where {
+    margin-top:10px; font-size:14.5px; color:#6a4a30; background:#faf0e2;
+    border-radius:10px; padding:10px 14px; line-height:1.8;
+}
+.chips { display:flex; flex-wrap:wrap; gap:7px; margin-top:10px; }
+.chip {
+    font-size:13.5px; font-weight:700; color:#6a4a30; background:#fff;
+    border:1.5px solid #e0c8a8; border-radius:20px; padding:5px 12px; word-break:normal;
+}
+.chip.rec { background:#fdf1e2; border-color:#c4714a; color:#8b4022; }
+
+.mini-note {
+    margin-top:12px; background:#fdf0e4; border:2px solid #e8ccb0; border-radius:12px;
+    padding:12px 14px; font-size:15px; color:#7a5a40; line-height:1.8;
+}
+.limit-note {
+    margin-top:14px; background:#fff3cd; border:2px solid #e8c766; border-radius:12px;
+    padding:14px 16px; font-size:15px; color:#6a4a20; line-height:1.8;
+}
+.ng-note {
+    background:#fdecec; border:2px solid #e8a8a8; border-radius:12px;
+    padding:14px 16px; font-size:15px; color:#7a3030; line-height:1.9;
+}
+.ng-note ul { margin:8px 0 0 20px; }
+.ng-note li { font-size:15px; }
+
+/* copy box */
+.copy-box { display:flex; gap:8px; align-items:center; background:#f4f4f4; border:1.5px solid #ddd; border-radius:10px; padding:10px 12px; margin-top:10px; }
+.copy-box code { flex:1; min-width:0; word-break:break-all; font-size:14px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color:#2a1a10; }
+
+/* ── FAQ ── */
+.faq { display:flex; flex-direction:column; gap:10px; }
+details { background:#fffdf9; border:2px solid #e8dccb; border-radius:14px; padding: 6px 18px; }
+summary {
+    cursor:pointer; padding:16px 0; font-size:16px; font-weight:700;
+    list-style:none; display:flex; justify-content:space-between; align-items:center; gap:10px;
+    word-break:normal; min-width:0;
+}
+summary::-webkit-details-marker { display:none; }
+summary::after { content:'+'; color:#c4714a; font-size:22px; font-weight:400; flex-shrink:0; }
+details[open] summary::after { content:'−'; }
+details p { font-size:15px; color:#6a4a30; padding-bottom:18px; }
+
+footer { text-align:center; margin-top:50px; font-size:13px; color:#c4a882; }
+
+@media (max-width: 480px) {
+    header h1 { font-size:22px; }
+    .flow-step-head h3 { font-size:17px; }
+    .bm-url { font-size:11.5px; padding:6px 8px; }
+    .bm-bar { gap:8px; padding:10px 8px; }
+    .bubble { max-width:90%; }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="emoji">🎬</div>
+    <h1>商品画像を1枚送るだけで<br>広告動画の「設計図」が全部出てきます</h1>
+    <p>動画素材作成GPTs は、商品URLや商品画像から、TikTok・リール・ショート向け15〜30秒動画の構成、画像生成プロンプト、動画生成プロンプト、テロップ、ナレーション、編集タイムラインまでをまとめて作ってくれるGPTsです。</p>
+</header>
+
+<div class="container">
+
+    <!-- これは何？ -->
+    <div class="section">
+        <div class="section-head">
+            <h2>このGPTsは何をしてくれる？</h2>
+            <p>「動画のネタ出し」ではなく、そのまま作業に入れる制作指示書を出してくれます</p>
+        </div>
+
+        <div class="svc-map">
+            <div class="svc-box a">
+                <div class="svc-icon">📦</div>
+                <h4>あなたが渡すもの</h4>
+                <p>商品URL / 商品画像 / 商品名 / 商品説明 / 販売ページのスクショ / 口コミ / 既存の広告素材　※どれか1つでOK</p>
+            </div>
+            <div class="svc-mid-arrow">↓</div>
+            <div class="svc-box b">
+                <div class="svc-icon">💬</div>
+                <h4>GPTsがやること</h4>
+                <p>必要な項目だけ1問ずつヒアリング → 商品とターゲットを分析 → 訴求とフックを設計 → 6シーン構成に落とし込む</p>
+            </div>
+            <div class="svc-mid-arrow">↓</div>
+            <div class="svc-box c">
+                <div class="svc-icon">📄</div>
+                <h4>出てくるもの</h4>
+                <p>14項目の制作指示書。画像生成AI・動画生成AI・音声・編集ソフトにそのまま貼れる形でコピペできます。</p>
+            </div>
+        </div>
+
+        <a class="btn-chip primary" href="https://chatgpt.com/g/g-6a610697ed1c8191956468b1b072ef5b-dong-hua-su-cai-zuo-cheng-gpts" target="_blank" rel="noopener" style="margin-top:18px;">🎬 動画素材作成GPTsを開く</a>
+
+        <div class="mini-note">💡 このGPTsは「完成した動画」は作りません。作るのは<b>設計図</b>です。画像生成AIと動画生成AIに指示を出す部分を、まるごと代行してくれると考えてください。</div>
+    </div>
+
+    <!-- 使い方の流れ -->
+    <div class="section">
+        <div class="section-head">
+            <h2>使い方の流れ</h2>
+            <p>質問に答えていくだけです。順番通りに進めてください。</p>
+        </div>
+
+        <!-- STEP 1 -->
+        <div class="flow-step">
+            <div class="flow-step-head">
+                <div class="flow-num">1</div>
+                <h3>🔗 GPTsを開く</h3>
+            </div>
+            <p class="desc">下のボタン、またはURLをコピーしてブラウザで開いてください。開くと最初に「商品URL、商品画像、商品説明、販売ページのスクリーンショットのいずれかを送ってください」と案内が出ます。</p>
+            <div class="copy-box">
+                <code>https://chatgpt.com/g/g-6a610697ed1c8191956468b1b072ef5b-dong-hua-su-cai-zuo-cheng-gpts</code>
+                <button class="btn-chip dark small" onclick="copyText(this, 'https://chatgpt.com/g/g-6a610697ed1c8191956468b1b072ef5b-dong-hua-su-cai-zuo-cheng-gpts')">📋 コピー</button>
+            </div>
+        </div>
+        <div class="flow-arrow-down">↓</div>
+
+        <!-- STEP 2 -->
+        <div class="flow-step">
+            <div class="flow-step-head">
+                <div class="flow-num">2</div>
+                <h3>📦 商品の情報を送る</h3>
+            </div>
+            <p class="desc">商品URLを貼るか、商品画像をそのままアップロードします。複数ある場合はまとめて送って大丈夫です。情報が多いほど分析の精度が上がります。</p>
+            <div class="browser-mock">
+                <div class="bm-bar">
+                    <div class="bm-dots"><span class="bm-dot r"></span><span class="bm-dot y"></span><span class="bm-dot g"></span></div>
+                    <div class="bm-url">chatgpt.com/g/…動画素材作成GPTs</div>
+                </div>
+                <div class="bm-content">
+                    <div class="mock-label">🖍 イメージ図</div>
+                    <div class="chat-row"><div class="bubble ai">商品広告動画を一緒に作ります。商品URL、商品画像、商品説明、販売ページのスクリーンショットのいずれかを送ってください。</div></div>
+                    <div class="chat-row me"><div class="bubble me">🖼 商品画像.jpg<br>この商品でお願いします</div></div>
+                    <div class="chat-input">メッセージを入力…</div>
+                </div>
+            </div>
+            <div class="limit-note">⚠️ 商品URLだけを貼った場合、中身を読み取れないことがあります。そのときGPTsは「見たフリ」をせず、画像や説明文の送付をお願いしてきます。<b>確実なのは商品画像＋商品説明を貼ること</b>です。</div>
+        </div>
+        <div class="flow-arrow-down">↓</div>
+
+        <!-- STEP 3 -->
+        <div class="flow-step">
+            <div class="flow-step-head">
+                <div class="flow-num">3</div>
+                <h3>💬 質問に1問ずつ答える</h3>
+            </div>
+            <p class="desc">最大5つの質問が、1問ずつ順番に出てきます。すでに分かっている項目は聞かれません。迷ったらすべて「AIにおまかせ」で大丈夫です。</p>
+            <div class="browser-mock">
+                <div class="bm-bar">
+                    <div class="bm-dots"><span class="bm-dot r"></span><span class="bm-dot y"></span><span class="bm-dot g"></span></div>
+                    <div class="bm-url">chatgpt.com/g/…動画素材作成GPTs</div>
+                </div>
+                <div class="bm-content">
+                    <div class="mock-label">🖍 イメージ図</div>
+                    <div class="chat-row"><div class="bubble ai">動画のテイストはどれにしますか？
+                        <ol>
+                            <li>自然なUGC風</li>
+                            <li>美容広告風</li>
+                            <li>高級ブランドCM風</li>
+                            <li>テンポの速いバズ動画風</li>
+                            <li>レビュー風</li>
+                            <li>比較・検証風</li>
+                            <li>AIにおまかせ</li>
+                        </ol>
+                    </div></div>
+                    <div class="chat-row me"><div class="bubble me">1</div></div>
+                    <div class="chat-input">番号で答えるだけでOK</div>
+                </div>
+            </div>
+            <div class="mini-note">💡 番号だけ打てば進みます。全部の質問に「7」（おまかせ）と答えても、商品カテゴリーに合った設定を自動で選んでくれます。</div>
+        </div>
+        <div class="flow-arrow-down">↓</div>
+
+        <!-- STEP 4 -->
+        <div class="flow-step">
+            <div class="flow-step-head">
+                <div class="flow-num">4</div>
+                <h3>📄 14項目の制作指示書が出てくる</h3>
+            </div>
+            <p class="desc">ヒアリングが終わると、企画概要から制作手順まで一気に出力されます。長いので、上から順に読みながら作業していけばOKです。</p>
+            <div class="browser-mock">
+                <div class="bm-bar">
+                    <div class="bm-dots"><span class="bm-dot r"></span><span class="bm-dot y"></span><span class="bm-dot g"></span></div>
+                    <div class="bm-url">chatgpt.com/g/…動画素材作成GPTs</div>
+                </div>
+                <div class="bm-content">
+                    <div class="mock-label">🖍 イメージ図：出力のイメージ</div>
+                    <div class="doc-mock">
+                        <div class="doc-h">7. 画像生成プロンプト｜Scene 1</div>
+                        <div class="doc-line"></div>
+                        <div class="doc-line m"></div>
+                        <div class="doc-line s"></div>
+                        <div class="doc-code">Vertical 9:16 product ad photo,
+the product placed at lower right,
+soft morning window light,
+clean beige background,
+keep package shape / color / logo
+position exactly as reference,
+no text, no watermark</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flow-arrow-down">↓</div>
+
+        <!-- STEP 5 -->
+        <div class="flow-step">
+            <div class="flow-step-head">
+                <div class="flow-num">5</div>
+                <h3>🖼 画像生成AIにプロンプトを貼る</h3>
+            </div>
+            <p class="desc">「画像生成プロンプト」の項目には、シーンごとに<b>日本語版と英語版</b>が入っています。使っている画像生成AIに合わせてコピペしてください。縦型9:16で設計されています。</p>
+            <div class="mini-note">💡 商品画像を渡している場合は「形・色・パッケージ・ロゴの位置を維持する」指示が自動で入ります。ただし細かい文字やロゴは画像生成AIが正確に再現できないことがあります。</div>
+        </div>
+        <div class="flow-arrow-down">↓</div>
+
+        <!-- STEP 6 -->
+        <div class="flow-step">
+            <div class="flow-step-head">
+                <div class="flow-num">6</div>
+                <h3>🎥 動画生成AIにプロンプトを貼る</h3>
+            </div>
+            <p class="desc">生成した画像と、「動画生成プロンプト」の英語プロンプトをセットで動画生成AIに入れます。開始状態・動き・カメラワーク・終了状態・推奨秒数まで書かれているので、そのまま使えます。</p>
+            <div class="chips">
+                <span class="chip">Higgsfield</span>
+                <span class="chip">Google Flow・Veo</span>
+                <span class="chip">Kling</span>
+                <span class="chip">Luma</span>
+                <span class="chip">LTX Studio</span>
+                <span class="chip">その他 / 未定でもOK</span>
+            </div>
+            <div class="mini-note">💡 使うAIを事前に伝えておくとそれに寄せてくれます。未定のままなら、どのAIでも使える汎用プロンプトになります。</div>
+        </div>
+        <div class="flow-arrow-down">↓</div>
+
+        <!-- STEP 7 -->
+        <div class="flow-step">
+            <div class="flow-step-head">
+                <div class="flow-num">7</div>
+                <h3>✂️ 編集タイムライン通りに仕上げる</h3>
+            </div>
+            <p class="desc">0秒から終了までのタイムラインに、シーン切り替え・テロップ・ナレーション・BGMの入れどころが時系列で書かれています。あとはその通りに編集ソフトへ並べるだけです。</p>
+            <div class="mini-note">💡 テロップ・ナレーション・BGMは<b>後入れが標準推奨</b>です。理由は、誤字・発音・音量・タイミングをあとから直せるからです。</div>
+        </div>
+    </div>
+
+    <!-- ヒアリングされる5項目 -->
+    <div class="section">
+        <div class="section-head">
+            <h2>聞かれる質問と選択肢</h2>
+            <p>先に決めておくとスムーズです。すべて「おまかせ」でも進みます。</p>
+        </div>
+
+        <div class="setting-card">
+            <div class="setting-card-head"><div class="si">🎯</div><h3>① 動画の目的</h3></div>
+            <p>何をゴールにする動画かで、構成もCTAも変わります。</p>
+            <div class="chips">
+                <span class="chip">商品を購入してもらう</span>
+                <span class="chip">商品ページを見てもらう</span>
+                <span class="chip">認知を広げる</span>
+                <span class="chip">興味を持ってもらう</span>
+                <span class="chip">LINE・メルマガへ誘導</span>
+            </div>
+        </div>
+
+        <div class="setting-card">
+            <div class="setting-card-head"><div class="si">🎨</div><h3>② 動画のテイスト</h3></div>
+            <p>映像の雰囲気です。商品ジャンルに合うものを選びます。</p>
+            <div class="chips">
+                <span class="chip">自然なUGC風</span>
+                <span class="chip">美容広告風</span>
+                <span class="chip">高級ブランドCM風</span>
+                <span class="chip">テンポの速いバズ動画風</span>
+                <span class="chip">レビュー風</span>
+                <span class="chip">比較・検証風</span>
+                <span class="chip rec">AIにおまかせ</span>
+            </div>
+        </div>
+
+        <div class="setting-card">
+            <div class="setting-card-head"><div class="si">🙋</div><h3>③ 人物を出すか</h3></div>
+            <p>顔出しなしでも作れます。AIで崩れやすい部分を避けたいときは「商品のみ」が安全です。</p>
+            <div class="chips">
+                <span class="chip">顔を映す</span>
+                <span class="chip">手元・身体の一部だけ</span>
+                <span class="chip">商品のみ</span>
+                <span class="chip rec">AIにおまかせ</span>
+            </div>
+        </div>
+
+        <div class="setting-card">
+            <div class="setting-card-head"><div class="si">🔊</div><h3>④ ナレーション・テロップ・BGMの作り方</h3></div>
+            <p>音と文字を「動画生成時に入れる」か「あとから入れる」かの選択です。</p>
+            <div class="chips">
+                <span class="chip rec">映像だけ生成し、音と文字は後入れ（推奨）</span>
+                <span class="chip">ナレーションだけ生成時</span>
+                <span class="chip">ナレーション＋環境音を生成時</span>
+                <span class="chip">できるだけ一括生成</span>
+                <span class="chip">項目ごとに選ぶ</span>
+            </div>
+            <div class="where">迷ったら「1（後入れ）」。あとから直せるので失敗しにくいです。商品の使用音や自然な環境音だけ、必要に応じて生成時に入れます。</div>
+        </div>
+
+        <div class="setting-card">
+            <div class="setting-card-head"><div class="si">🤖</div><h3>⑤ 使用する動画生成AI</h3></div>
+            <p>使うツールが決まっていれば伝えます。未定なら汎用プロンプトが作られます。</p>
+            <div class="chips">
+                <span class="chip">Higgsfield</span>
+                <span class="chip">Google Flow・Veo</span>
+                <span class="chip">Kling</span>
+                <span class="chip">Luma</span>
+                <span class="chip">LTX Studio</span>
+                <span class="chip">まだ決めていない</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 出力される14項目 -->
+    <div class="section">
+        <div class="section-head">
+            <h2>出力される14項目</h2>
+            <p>この順番でまとめて出てきます。上から順に作業すれば動画が完成します。</p>
+        </div>
+        <div class="out-list">
+            <div class="out-item"><div class="n">1</div><div class="t">動画企画概要<span>目的・ターゲット・尺・テイスト・使用AI・アスペクト比などの前提まとめ</span></div></div>
+            <div class="out-item"><div class="n">2</div><div class="t">商品分析<span>悩み／特徴／ベネフィット／見せ場／購入を迷う理由／注意すべき表現</span></div></div>
+            <div class="out-item"><div class="n">3</div><div class="t">訴求案3つ＋推奨案<span>なぜその訴求が良いかの理由つき</span></div></div>
+            <div class="out-item"><div class="n">4</div><div class="t">冒頭フック5案＋推奨案<span>最初の1〜2秒で理解できる短さで設計</span></div></div>
+            <div class="out-item"><div class="n">5</div><div class="t">6シーン構成一覧<span>フック→悩み→商品登場→使用シーン→変化→CTA</span></div></div>
+            <div class="out-item"><div class="n">6</div><div class="t">各シーンの詳細設計<span>映像・構図・カメラアングル・カメラワーク・光・色調・つなぎ方</span></div></div>
+            <div class="out-item"><div class="n">7</div><div class="t">画像生成プロンプト<span>Scene 1〜6の日本語版・英語版・除外したい要素</span></div></div>
+            <div class="out-item"><div class="n">8</div><div class="t">動画生成プロンプト<span>Scene 1〜6の英語プロンプト・秒数・音声設定</span></div></div>
+            <div class="out-item"><div class="n">9</div><div class="t">テロップ一覧<span>表示時間・文章・表示位置・強調語</span></div></div>
+            <div class="out-item"><div class="n">10</div><div class="t">ナレーション設計<span>全文・シーン別・話者・声の雰囲気・話す速度</span></div></div>
+            <div class="out-item"><div class="n">11</div><div class="t">BGM・効果音設計<span>曲調・テンポ・音量・入れる位置</span></div></div>
+            <div class="out-item"><div class="n">12</div><div class="t">編集タイムライン<span>0秒から終了までを時系列で記載</span></div></div>
+            <div class="out-item"><div class="n">13</div><div class="t">CTA<span>推奨案1つ＋別案2つ</span></div></div>
+            <div class="out-item"><div class="n">14</div><div class="t">制作手順<span>初心者でも実行できる順番で、書き出しまで説明</span></div></div>
+        </div>
+    </div>
+
+    <!-- コツ -->
+    <div class="section">
+        <div class="section-head">
+            <h2>うまく使うコツ</h2>
+        </div>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="fi">✏️</div>
+                <div>
+                    <h3>直したいところだけ言えばいい</h3>
+                    <p>「Scene 3のテロップだけ変えて」と伝えれば、全体を作り直さずに直してくれます。影響する前後のシーンやプロンプト、タイムラインも自動で合わせて更新されます。</p>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="fi">🧍</div>
+                <div>
+                    <h3>人物と商品の設定は自動で固定される</h3>
+                    <p>同じ人物を複数シーンで使う場合、年齢・髪型・服装・メイクまで固定した説明が全シーンで使い回されます。商品も色・形・ラベル・ロゴ位置が固定されるので、シーンごとに別物になりにくいです。</p>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="fi">🎞️</div>
+                <div>
+                    <h3>ストーリーボードも頼める</h3>
+                    <p>「モンタージュ画像も作って」と伝えると、6シーンを2列×3段の1枚絵にまとめるプロンプトも出してくれます。構成の確認用です。実際の動画生成では、各シーンを個別画像にした方が安定します。</p>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="fi">🧩</div>
+                <div>
+                    <h3>1シーンに動きを詰め込まない設計</h3>
+                    <p>手・指・顔・パッケージはAIが崩しやすいところです。このGPTsは最初から動きを単純にする方針で組まれているので、生成の失敗が減ります。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 安全設計 -->
+    <div class="section">
+        <div class="section-head">
+            <h2>やらないように作られていること</h2>
+            <p>広告として出せない表現を勝手に作らないよう、あらかじめ制限がかかっています</p>
+        </div>
+        <div class="ng-note">
+            <b>🚫 このGPTsが禁止されている行為</b>
+            <ul>
+                <li>商品情報や口コミの捏造</li>
+                <li>URLを見ていないのに見たフリをする</li>
+                <li>効果や成果を保証する</li>
+                <li>根拠のない「No.1」「専門家推奨」「受賞歴」</li>
+                <li>存在しない割引・限定・残り数・終了期限</li>
+                <li>「必ず売れる」「必ず伸びる」という断定</li>
+                <li>誤認を招くビフォーアフター</li>
+            </ul>
+        </div>
+        <div class="limit-note">⚠️ 美容・健康・食品・サプリ・医療・金融の商品は特に慎重に扱われ、広告表現や関係法令の確認をうながされます。最終的な表現チェックは必ず自分で行ってください。</div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="section">
+        <div class="section-head">
+            <h2>よくある質問</h2>
+        </div>
+        <div class="faq">
+            <details open>
+                <summary>動画そのものは作ってくれますか？</summary>
+                <p>いいえ。このGPTsが作るのは設計図とプロンプトまでです。実際の画像・動画は、出てきたプロンプトを画像生成AI・動画生成AIに貼って作ります。編集タイムラインまで書かれているので、あとは並べるだけの状態になります。</p>
+            </details>
+            <details>
+                <summary>商品URLを貼ったのに「画像を送ってください」と言われます</summary>
+                <p>ページの中身を読み取れなかったときの正しい動作です。読めていないのに読んだフリをしないよう作られています。商品画像や商品説明を直接貼ってください。</p>
+            </details>
+            <details>
+                <summary>質問が多くて面倒です</summary>
+                <p>すべて「おまかせ」と答えて構いません。商品カテゴリー・目的・ターゲットに合った設定を自動で選んで進めてくれます。また、最初のメッセージで「TikTok用・UGC風・商品のみ・音は後入れ」のようにまとめて書いておけば、その項目は質問されません。</p>
+            </details>
+            <details>
+                <summary>何秒の動画が作れますか？</summary>
+                <p>15〜30秒程度が前提です。TikTok・Instagramリール・YouTube Shorts向けの縦型9:16で、6シーン前後の構成になります。</p>
+            </details>
+            <details>
+                <summary>使う動画生成AIが決まっていません</summary>
+                <p>「まだ決めていない」と答えれば、どのサービスでも使える汎用的なプロンプトが作られます。あとから決まったら伝えれば、それに合わせて調整してもらえます。</p>
+            </details>
+            <details>
+                <summary>プロンプトは日本語と英語どちらで出ますか？</summary>
+                <p>画像生成プロンプトは日本語版と英語版の両方が出ます。動画生成プロンプトは英語で出て、内容の日本語説明が添えられます。</p>
+            </details>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    🎬 動画素材作成GPTs 使い方ガイド
+</footer>
+
+<script>
+function copyText(btn, text) {
+    const original = btn.textContent;
+    const done = () => { btn.textContent = '✅ コピーしました'; setTimeout(() => { btn.textContent = original; }, 1500); };
+    navigator.clipboard.writeText(text).then(done).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+        done();
+    });
+}
+</script>
+
+<!-- 埋め込み(iframe)時に親ページへ自分の高さを通知し、内部スクロールを防ぐ -->
+<script>
+(function () {
+    if (window.parent === window) return;
+    var last = 0;
+    function send() {
+        var h = Math.max(
+            document.documentElement.scrollHeight,
+            document.body ? document.body.scrollHeight : 0
+        );
+        if (Math.abs(h - last) < 2) return;
+        last = h;
+        window.parent.postMessage({ type: 'buzzGuideHeight', height: h }, '*');
+    }
+    window.addEventListener('load', send);
+    window.addEventListener('resize', send);
+    document.addEventListener('DOMContentLoaded', send);
+    if (window.ResizeObserver) { new ResizeObserver(send).observe(document.documentElement); }
+    setInterval(send, 1000);
+    send();
+})();
+</script>
+
+</body>
+</html>
