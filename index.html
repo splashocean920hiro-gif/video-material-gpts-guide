@@ -143,6 +143,21 @@ p.desc { font-size:16px; color:#4a3220; }
     white-space:pre-wrap; word-break:break-word;
 }
 
+/* ── ステップ内の小手順 ── */
+.substeps { counter-reset: sub; margin-top:12px; display:flex; flex-direction:column; gap:9px; }
+.substep {
+    display:flex; gap:11px; align-items:flex-start;
+    background:#fff; border:1.5px solid #e8dccb; border-radius:11px; padding:11px 13px;
+}
+.substep::before {
+    counter-increment: sub; content: counter(sub);
+    flex-shrink:0; width:24px; height:24px; border-radius:50%;
+    background:#8b4022; color:#fff; font-size:13px; font-weight:800;
+    display:flex; align-items:center; justify-content:center; margin-top:3px;
+}
+.substep .st { font-size:15.5px; color:#2a1a10; min-width:0; line-height:1.8; }
+.substep .st span { display:block; font-size:14px; color:#7a5a40; margin-top:2px; }
+
 /* ── 番号付き出力リスト ── */
 .out-list { display:flex; flex-direction:column; gap:8px; }
 .out-item {
@@ -343,10 +358,16 @@ footer { text-align:center; margin-top:50px; font-size:13px; color:#c4a882; }
         <div class="flow-step">
             <div class="flow-step-head">
                 <div class="flow-num">4</div>
-                <h3>🖼 画像生成AIにプロンプトを貼る</h3>
+                <h3>🖼 画像を作って保存する</h3>
             </div>
-            <p class="desc">「画像生成プロンプト」の項目には、シーンごとに<b>日本語版と英語版</b>が入っています。使っている画像生成AIに合わせてコピペしてください。縦型9:16で設計されています。</p>
-            <div class="mini-note">💡 商品画像を渡している場合は「形・色・パッケージ・ロゴの位置を維持する」指示が自動で入ります。ただし細かい文字やロゴは画像生成AIが正確に再現できないことがあります。</div>
+            <p class="desc">別のツールを開く必要はありません。出てきた<b>画像生成プロンプトの「英語版」</b>を、そのまま同じチャットに貼り付けてください。その場でシーンの画像が作られます。</p>
+            <div class="substeps">
+                <div class="substep"><div class="st">Scene 1の画像生成プロンプト（英語版）をコピーする</div></div>
+                <div class="substep"><div class="st">同じチャットにそのまま貼って送信する</div></div>
+                <div class="substep"><div class="st">出てきた画像を保存する<span>パソコンは右クリック、スマホは長押しで保存できます</span></div></div>
+                <div class="substep"><div class="st">Scene 2以降も同じ手順で、必要なシーンぶん画像を作る</div></div>
+            </div>
+            <div class="mini-note">💡 日本語版も出ていますが、<b>英語版のほうが指示が正確に伝わります</b>。商品画像を渡していれば「形・色・パッケージ・ロゴの位置を維持する」指示が自動で入ります。ただし細かい文字やロゴは正確に再現できないことがあります。</div>
         </div>
         <div class="flow-arrow-down">↓</div>
 
@@ -354,18 +375,19 @@ footer { text-align:center; margin-top:50px; font-size:13px; color:#c4a882; }
         <div class="flow-step">
             <div class="flow-step-head">
                 <div class="flow-num">5</div>
-                <h3>🎥 動画生成AIにプロンプトを貼る</h3>
+                <h3>🎥 保存した画像を動画にする</h3>
             </div>
-            <p class="desc">生成した画像と、「動画生成プロンプト」の英語プロンプトをセットで動画生成AIに入れます。開始状態・動き・カメラワーク・終了状態・推奨秒数まで書かれているので、そのまま使えます。</p>
-            <div class="chips">
-                <span class="chip">Higgsfield</span>
-                <span class="chip">Google Flow・Veo</span>
-                <span class="chip">Kling</span>
-                <span class="chip">Luma</span>
-                <span class="chip">LTX Studio</span>
-                <span class="chip">その他 / 未定でもOK</span>
+            <p class="desc">保存した画像を動かすツールとして、Googleの「Flow」がおすすめです。無料のクレジットで始められます。</p>
+            <a class="btn-chip primary" href="https://labs.google/fx/ja/tools/flow" target="_blank" rel="noopener">🎞 Google Flow を開く</a>
+            <div class="substeps">
+                <div class="substep"><div class="st">「新しいプロジェクト」を作る</div></div>
+                <div class="substep"><div class="st">設定を開いて、<b>アスペクト比を9:16（縦型）</b>にする</div></div>
+                <div class="substep"><div class="st">モードを <b>Veo lite</b>、生成する<b>個数を1</b>にする<span>クレジットの消費を抑えるための設定です</span></div></div>
+                <div class="substep"><div class="st">チャット入力欄の<b>「＋」マーク</b>から、保存した画像を選んでアップロードする</div></div>
+                <div class="substep"><div class="st">GPTsの<b>動画生成プロンプト（英語）</b>をコピーして貼り付ける</div></div>
+                <div class="substep"><div class="st">送信すると、その画像が動き出す</div></div>
             </div>
-            <div class="mini-note">💡 使うAIを事前に伝えておくとそれに寄せてくれます。未定のままなら、どのAIでも使える汎用プロンプトになります。</div>
+            <div class="limit-note">⚠️ 無料クレジットは<b>1日50</b>です。1本の生成でクレジットを消費するため、目安として<b>1日に1〜3本</b>の動画が作れます。使い切っても翌日には回復します。</div>
         </div>
         <div class="flow-arrow-down">↓</div>
 
